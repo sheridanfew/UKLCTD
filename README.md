@@ -5,14 +5,12 @@
 
 This repository contains:
 
-(1) The United Kingdom Photovoltaics Database (UKPVD), a collection of geographically disaggregated data on PV deployment, network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
+(1) The United Kingdom Photovoltaics Database (UKPVD), a collection of real geographically disaggregated data on current PV deployment, network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
 
-(2) Scenarios for deployment of photovoltaics (PV), heat pumps (HPs), electric vehicles (EVs), and battery storage upto 2050 at an LSOA level based upon National Grid's Future Energy Scenarios (FES) and UKPN, NPG, and WPD's Distribution Future Energy Scenarios (DFES)
+(2) Scenarios for future deployment of photovoltaics (PV), heat pumps (HPs), electric vehicles (EVs), and battery storage upto 2050 at an LSOA level based upon current data, National Grid's Future Energy Scenarios (FES) and UKPN, NPG, and WPD's Distribution Future Energy Scenarios (DFES).
 
-(3) Raw data from which each of the above are generated, and R scripts used to generate the above databases from raw data. Links to sources of raw data are included in scripts where possiblem to facilitate
+(3) Raw data from which each of the above are generated, and R scripts used to generate the above databases from raw data. Links to sources of raw data are included in scripts to facilitate upadating of this framework as new data becomes available.
 
-
-Data on PV deployment and other relevant quantities at an LSOA level. R scripts to generate and process this data.
 
 ### Usage ###
 
