@@ -1,21 +1,33 @@
 # UKPVD
+
+Overview
+########
+
+This repository contains:
+
+(1) The United Kingdom Photovoltaics Database (UKPVD), a collection of geographically disaggregated data on PV deployment, network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
+
+(2) Scenarios for deployment of photovoltaics (PV), heat pumps (HPs), electric vehicles (EVs), and battery storage upto 2050 at an LSOA level based upon National Grid's Future Energy Scenarios (FES) and UKPN, NPG, and WPD's Distribution Future Energy Scenarios (DFES)
+
+(3) Raw data from which each of the above are generated, and scripts used to generate the above databases from raw data. Links to sources of raw data are included in scripts where possiblem to facilitate
+
+
 Data on PV deployment and other relevant quantities at an LSOA level. R scripts to generate and process this data.
 
-Readme
-######
+Usage
+#####
 
-This directory contains a set of R scripts and associated data to generate from raw data: (1) the UKPVD database, (2) future scenarios at an LSOA level based on National Grid FES, and (3) future scenarios at an LSOA level based upon National Grid FES and UKPN and NPG DFES. Comments in R scripts indicate the sources of this data.
 
-Files intended to be run in this order (names mostly self explanatory)
+To generate the UKPVD and scenarios based upon this, scripts are intended to be run in this order (names mostly self explanatory)
 
 - Generate_UKPVD.R
 - Add_substations_to_UKPVD.R
 - Generate_NG_scenarios.R
 - Add_DFES_scenarios.R
 
-(Note: 'root_path' variable will need updating in each script to reflect the path these files are kept in on your local directory)
+(Note: before running these, 'root_path' variable will need to be updated in each script to reflect the path these files are kept in on your local repository)
 
-Each of these scripts generates data used by subsequent scripts. These are broken down into stages as far as possible.
+Each of these scripts generates data used by subsequent scripts. These are broken down into stages and commented as far as possible.
 
 Directory Structure
 ####################
