@@ -37,7 +37,7 @@ Plots are generated in the "Plots" folder
 
 ### Convention ###
 
-These scripts were written with the following naming/processing convention in mind (not completely consistently followed):
+These scripts were written with the following naming/processing convention in mind (not always consistently followed):
 
 Databases: Source_Datatype_Resolution_Format (Ofgem_FiT_PV_LSOA_df)
 
