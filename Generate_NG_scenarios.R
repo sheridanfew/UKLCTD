@@ -20,7 +20,7 @@ output_path <- paste(root_path,'Output_data/',sep='') # NB. These are the same h
 ### INPUT DATA
 
 # UKPVD containing recent LSOA-level data on spatial area, population, rurality, meter data, PV deployment, and substation density. Generated from raw data sources using 'Generate_UKPVD.R', and substation data added using 'Add_substations_to_UKPVD.R'
-UKPVD_input <- 'UKPVD_w_substations_Oct2020.csv'
+UKPVD_input <- 'UKPVD_w_substations_w_Scot_Rurality_Oct2020.csv'
 
 # National Grid Future Energy Scenarios 2019 data workbook source: https://www.nationalgrideso.com/future-energy/future-energy-scenarios/fes-2019-documents date accessed: 9 Oct 2020
 NG_FES_input <- "National_Grid/fes-data-workbook-v30.xlsx" 

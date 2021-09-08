@@ -19,12 +19,20 @@ To generate the UKPVD and scenarios based upon this, scripts are intended to be 
 
 - Generate_UKPVD.R
 - Add_substations_to_UKPVD.R
+- Add_Scottish_rurality_to_UKPVD.R
 - Generate_NG_scenarios.R
-- Add_DFES_scenarios.R
+- Add_DFES_scenarios_w_plot.R
+- Cap_Deployment.R
 
 (Note: before running these, 'root_path' variable will need to be updated in each script to reflect the path these files are kept in on your local repository)
 
 Each of these scripts generates data used by subsequent scripts. These are broken down into stages and commented as far as possible.
+
+The data may be explored after importing using the following script:
+
+- Generate_UKPVD.R
+
+Additional scripts produce violin plots and distribution plots based upon this data.
 
 ### Directory Structure ###
 
@@ -44,3 +52,11 @@ Databases: Source_Datatype_Resolution_Format (Ofgem_FiT_PV_LSOA_df)
 Variables: Variable_Sector_Aggregation_Unit (eg. PV_dom_med_kW)
 
 Processing: (1) Import/merge data, (2) Rename columns, (3) Subset data, (4) Process data, (5) export data
+
+### Attribution ###
+
+If this framework has been useful, please cite the following papers outlining our methodology:
+
+Sheridan Few, Predrag Djapic, Goran Strbac, Jenny Nelson, and Chiara Candelise. ‘Assessing Local Costs and Impacts of Distributed Solar PV Using High Resolution Data from across Great Britain’. Renewable Energy 162 (December 2020): 1140–50. https://doi.org/10.1016/j.renene.2020.08.025.
+
+Sheridan Few, Predrag Djapic, Goran Strbac, Jenny Nelson, and Chiara Candelise. 'Geographically disaggregated approach to integrate low carbon technologies across local electricity networks'. (Manuscript in preparation)
