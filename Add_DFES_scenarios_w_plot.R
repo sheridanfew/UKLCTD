@@ -1,4 +1,4 @@
-# Script to generate NG scenarios from UKPVD database directly from data sources
+# Script to generate NG scenarios from UKLCTD database directly from data sources
 # Sheridan Few, Oct 2020
 # See also readme file
 
@@ -11,9 +11,9 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKPVD/'
+root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
-intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKPVD is kept
+intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKLCTD is kept
 output_path <- paste(root_path,'Output_data/',sep='') # NB. These are the same here - output here is intermediate
 plot_path <- paste(root_path,'Plots/',sep='') # NB. These are the same here - output here is intermediate
 
@@ -22,11 +22,11 @@ plot_path <- paste(root_path,'Plots/',sep='') # NB. These are the same here - ou
 # ONS Table to convert between LA and LSOA, source: https://geoportal.statistics.gov.uk/datasets/output-area-to-lsoa-to-msoa-to-local-authority-district-december-2017-lookup-with-area-classifications-in-great-britain/data date accessed: 8 Oct 2020
 ONS_OA_LSOA_MSOA_LA_conversion_input <- "ONS/Output_Area_to_LSOA_to_MSOA_to_Local_Authority_District__December_2017__Lookup_with_Area_Classifications_in_Great_Britain.csv" 
 
-# UKPVD containing recent LSOA-level data on spatial area, population, rurality, meter data, PV deployment, and substation density. Generated from raw data sources using 'Generate_UKPVD.R', and substation data added using 'Add_substations_to_UKPVD.R'
-UKPVD_input <- 'UKPVD_w_substations_Oct2020.csv'
+# UKLCTD containing recent LSOA-level data on spatial area, population, rurality, meter data, PV deployment, and substation density. Generated from raw data sources using 'Generate_UKLCTD.R', and substation data added using 'Add_substations_to_UKLCTD.R'
+UKLCTD_input <- 'UKLCTD_w_substations_Oct2020.csv'
 
 # National Grid Future Energy Scenarios 2019 data workbook source: https://www.nationalgrideso.com/future-energy/future-energy-scenarios/fes-2019-documents date accessed: 9 Oct 2020
-NG_FES_input <- 'FES/UKPVD_Scenarios_FES2019_'
+NG_FES_input <- 'FES/UKLCTD_Scenarios_FES2019_'
 
 # DFES Inputs:
 # WPD 2020 data workbook source: https://www.westernpower.co.uk/distribution-future-energy-scenarios-application date accessed: 8 Jan 2021
@@ -70,7 +70,7 @@ UKPN_DFES_Stor_Dom_input <- 'DFES/UKPN/UKPN-domestic-battery-scenarios-LSOA.xlsx
 UKPN_DFES_Stor_Nondom_input <- 'DFES/UKPN/UKPN-industrial-and-commercial-battery-storage-scenarios-LSOA.xlsx' 
 
 ### OUTPUT DATA
-DFES_base_output <- 'UKPVD_Scenarios_DFES_base_'
+DFES_base_output <- 'UKLCTD_Scenarios_DFES_base_'
 
 # VARIABLES (USED GLOBALLY)
 
@@ -132,28 +132,28 @@ LSOA_LA_df=subset(OA_LSOA_MSOA_LA_df, select=c("LSOA", "LA"))
 LSOA_LA_lookup_df=unique(LSOA_LA_df)
 
 
-### 2. IMPORT UKPVD
+### 2. IMPORT UKLCTD
 #############################################################################################################
 
 # Import data
-UKPVD_df<-read.csv(paste(intermediate_path,UKPVD_input, sep=''), header=TRUE)
+UKLCTD_df<-read.csv(paste(intermediate_path,UKLCTD_input, sep=''), header=TRUE)
 
 ### 3. IMPORT NG FES SCENARIOS
 #############################################################################################################
 
 # Import data by year
 
-UKPVD_FES_df <- lapply(years_of_interest_list,function(year)
+UKLCTD_FES_df <- lapply(years_of_interest_list,function(year)
 {
-	 UKPVD_year_df<-read.csv(paste(intermediate_path,NG_FES_input,year,'.csv', sep=''), header=TRUE)
-	return(UKPVD_year_df)
+	 UKLCTD_year_df<-read.csv(paste(intermediate_path,NG_FES_input,year,'.csv', sep=''), header=TRUE)
+	return(UKLCTD_year_df)
 }
 )
 
-names(UKPVD_FES_df) <- years_of_interest_list
+names(UKLCTD_FES_df) <- years_of_interest_list
 
 
-### 4. IMPORT dFES SCENARIOS AND REPLACE VALUES WITH THESE IN UKPVD SCENARIOS
+### 4. IMPORT dFES SCENARIOS AND REPLACE VALUES WITH THESE IN UKLCTD SCENARIOS
 #############################################################################################################
 
 ### 4a. WPD Scenarios
@@ -325,7 +325,7 @@ WPD_NPG_combined_data_list<-lapply(c('DomPV_MW_df','EVs_number_df','HPs_number_d
 names(WPD_NPG_combined_data_list)<-c('DomPV_MW_df','EVs_number_df','HPs_number_df','Stor_MW_df')
 
 # This step using WPD and NPG data combined
-# Convert to LSOA level (by dividing equally between LSOAs in the LA - several steps following the same thinking as converting MSOA level data for nondom demand in creating the UKPVD)
+# Convert to LSOA level (by dividing equally between LSOAs in the LA - several steps following the same thinking as converting MSOA level data for nondom demand in creating the UKLCTD)
 
 ## Get list of WPD_NPG LAs
 WPD_NPG_LAs<-rownames(WPD_NPG_combined_data_list[[1]])
@@ -340,13 +340,13 @@ WPD_NPG_combined_data_LSOA_df$Heatpumps_LSOA_number<-NA
 WPD_NPG_combined_data_LSOA_df$Storage_sum_kW<-NA
 
 # Add number of meters (used in allocating techs across LSOA)
-WPD_NPG_combined_data_LSOA_df <- merge(WPD_NPG_combined_data_LSOA_df,UKPVD_df[c('LSOA','Meters_domestic')],by='LSOA')
+WPD_NPG_combined_data_LSOA_df <- merge(WPD_NPG_combined_data_LSOA_df,UKLCTD_df[c('LSOA','Meters_domestic')],by='LSOA')
 
 
 # Routine to divide between constituent LSOAs - I wrote this a while ago and it's a bit slow and clunky, but it works
 
 # Make df containing DFES values for each year of interest:
-UKPVD_WPD_NPG_DFES_df<-lapply(years_of_interest_list, function(year) {
+UKLCTD_WPD_NPG_DFES_df<-lapply(years_of_interest_list, function(year) {
 	print(paste('Running for year: ', year,sep=''))
 	# Duplicate df with all LSOAs to process here ( needs redoing each time because it's a global variable - bit messy)
 	WPD_NPG_combined_data_LSOA_year_df<<-WPD_NPG_combined_data_LSOA_df
@@ -384,7 +384,7 @@ UKPVD_WPD_NPG_DFES_df<-lapply(years_of_interest_list, function(year) {
 	return(WPD_NPG_combined_data_LSOA_year_df)
 })
 
-names(UKPVD_WPD_NPG_DFES_df)<-years_of_interest_list
+names(UKLCTD_WPD_NPG_DFES_df)<-years_of_interest_list
 
 
 ### 4d  UKPN SCENARIOS
@@ -429,7 +429,7 @@ names(UKPN_combined_data_list)<-c('PV_Domestic_kW_df','PV_Nondom_kW_df','BEVs_nu
 
 # Combine into single df arranged by year (as per NPG data) Vans and cars added together as for NG FES
 
-UKPVD_UKPN_DFES_df <- lapply(years_of_interest_list, function(year) {
+UKLCTD_UKPN_DFES_df <- lapply(years_of_interest_list, function(year) {
 	year_df <- cbind(UKPN_combined_data_list[['PV_Domestic_kW_df']][c('LSOA',year)],
 		UKPN_combined_data_list[['PV_Nondom_kW_df']][year],
 		UKPN_combined_data_list[['BEVs_number_df']][year]+UKPN_combined_data_list[['BEV_vans_number_df']][year],
@@ -443,107 +443,107 @@ UKPVD_UKPN_DFES_df <- lapply(years_of_interest_list, function(year) {
 	return(year_df)
 	})
 
-names(UKPVD_UKPN_DFES_df)<-years_of_interest_list
+names(UKLCTD_UKPN_DFES_df)<-years_of_interest_list
 
 
 ### 5. CONVERSIONS/COMPARISONS
 #############################################################################################################
 
 
-# UKPVD_UKPN_union <- lapply(years_of_interest_list,function(year){
-# 	UKPVD_UKPN_DFES_year_relabelled_df<-UKPVD_UKPN_DFES_df[[year]]
-# 	colnames(UKPVD_UKPN_DFES_year_relabelled_df) <- c('LSOA',paste("UKPN", colnames(UKPVD_UKPN_DFES_year_relabelled_df)[-1], sep = "_"))
-# 	df <- merge(UKPVD_FES_df[[year]],UKPVD_UKPN_DFES_year_relabelled_df,by='LSOA')
+# UKLCTD_UKPN_union <- lapply(years_of_interest_list,function(year){
+# 	UKLCTD_UKPN_DFES_year_relabelled_df<-UKLCTD_UKPN_DFES_df[[year]]
+# 	colnames(UKLCTD_UKPN_DFES_year_relabelled_df) <- c('LSOA',paste("UKPN", colnames(UKLCTD_UKPN_DFES_year_relabelled_df)[-1], sep = "_"))
+# 	df <- merge(UKLCTD_FES_df[[year]],UKLCTD_UKPN_DFES_year_relabelled_df,by='LSOA')
 # })
-# names(UKPVD_UKPN_union)<-years_of_interest_list
+# names(UKLCTD_UKPN_union)<-years_of_interest_list
 
-# UKPVD_NPG_union <- lapply(years_of_interest_list,function(year){
-# 	UKPVD_NPG_DFES_year_relabelled_df<-UKPVD_NPG_DFES_df[[year]]
-# 	colnames(UKPVD_NPG_DFES_year_relabelled_df) <- c('LSOA',paste("NPG", colnames(UKPVD_NPG_DFES_year_relabelled_df)[-1], sep = "_"))
-# 	df <- merge(UKPVD_FES_df[[year]],UKPVD_NPG_DFES_year_relabelled_df,by='LSOA')
+# UKLCTD_NPG_union <- lapply(years_of_interest_list,function(year){
+# 	UKLCTD_NPG_DFES_year_relabelled_df<-UKLCTD_NPG_DFES_df[[year]]
+# 	colnames(UKLCTD_NPG_DFES_year_relabelled_df) <- c('LSOA',paste("NPG", colnames(UKLCTD_NPG_DFES_year_relabelled_df)[-1], sep = "_"))
+# 	df <- merge(UKLCTD_FES_df[[year]],UKLCTD_NPG_DFES_year_relabelled_df,by='LSOA')
 # })
 
-# names(UKPVD_NPG_union)<-years_of_interest_list
+# names(UKLCTD_NPG_union)<-years_of_interest_list
 
 # # PV per household
 
-# NG_PV_dom_per_household <- sum(UKPVD_FES_df[['2050']]$PV_domestic_sum_kW)/sum(UKPVD_FES_df[['2050']]$Meters_domestic)
-# NG_PV_nondom_per_household <- sum(UKPVD_FES_df[['2050']]$PV_nondom_sum_kW)/sum(UKPVD_FES_df[['2050']]$Meters_domestic)
+# NG_PV_dom_per_household <- sum(UKLCTD_FES_df[['2050']]$PV_domestic_sum_kW)/sum(UKLCTD_FES_df[['2050']]$Meters_domestic)
+# NG_PV_nondom_per_household <- sum(UKLCTD_FES_df[['2050']]$PV_nondom_sum_kW)/sum(UKLCTD_FES_df[['2050']]$Meters_domestic)
 
-# UKPN_PV_dom_per_household_2020 <- sum(UKPVD_UKPN_union[['2020']]$UKPN_PV_domestic_sum_kW)/sum(UKPVD_UKPN_union[['2020']]$Meters_domestic)
-# UKPN_PV_dom_per_household_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_PV_domestic_sum_kW)/sum(UKPVD_UKPN_union[['2050']]$Meters_domestic)
-# UKPN_PV_nondom_per_household_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_PV_Nondom_kW)/sum(UKPVD_UKPN_union[['2050']]$Meters_domestic)
+# UKPN_PV_dom_per_household_2020 <- sum(UKLCTD_UKPN_union[['2020']]$UKPN_PV_domestic_sum_kW)/sum(UKLCTD_UKPN_union[['2020']]$Meters_domestic)
+# UKPN_PV_dom_per_household_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_PV_domestic_sum_kW)/sum(UKLCTD_UKPN_union[['2050']]$Meters_domestic)
+# UKPN_PV_nondom_per_household_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_PV_Nondom_kW)/sum(UKLCTD_UKPN_union[['2050']]$Meters_domestic)
 
-# NPG_PV_per_household_2020 <- sum(UKPVD_NPG_union[['2020']]$NPG_PV_domestic_sum_kW)/sum(UKPVD_NPG_union[['2020']]$Meters_domestic)
-# NPG_PV_per_household_2050 <- sum(UKPVD_NPG_union[['2050']]$NPG_PV_domestic_sum_kW)/sum(UKPVD_NPG_union[['2050']]$Meters_domestic)
+# NPG_PV_per_household_2020 <- sum(UKLCTD_NPG_union[['2020']]$NPG_PV_domestic_sum_kW)/sum(UKLCTD_NPG_union[['2020']]$Meters_domestic)
+# NPG_PV_per_household_2050 <- sum(UKLCTD_NPG_union[['2050']]$NPG_PV_domestic_sum_kW)/sum(UKLCTD_NPG_union[['2050']]$Meters_domestic)
 
 # # Dom/nondom PV per demand
 
-# NG_PV_dom_per_dem_2050 <- sum(UKPVD_FES_df[['2050']]$PV_domestic_sum_kW)/sum(UKPVD_FES_df[['2050']]$Demand_domestic_sum_kWh)
-# NG_PV_nondom_per_dem_2050 <- sum(UKPVD_FES_df[['2050']]$PV_nondom_sum_kW)/sum(UKPVD_FES_df[['2050']]$Demand_nondom_sum_kWh)
+# NG_PV_dom_per_dem_2050 <- sum(UKLCTD_FES_df[['2050']]$PV_domestic_sum_kW)/sum(UKLCTD_FES_df[['2050']]$Demand_domestic_sum_kWh)
+# NG_PV_nondom_per_dem_2050 <- sum(UKLCTD_FES_df[['2050']]$PV_nondom_sum_kW)/sum(UKLCTD_FES_df[['2050']]$Demand_nondom_sum_kWh)
 
-# UKPN_PV_dom_per_dem_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_PV_domestic_sum_kW)/sum(UKPVD_UKPN_union[['2050']]$Demand_domestic_sum_kWh)
-# UKPN_PV_nondom_per_dem_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_PV_Nondom_kW)/sum(UKPVD_UKPN_union[['2050']]$Demand_nondom_sum_kWh)
+# UKPN_PV_dom_per_dem_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_PV_domestic_sum_kW)/sum(UKLCTD_UKPN_union[['2050']]$Demand_domestic_sum_kWh)
+# UKPN_PV_nondom_per_dem_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_PV_Nondom_kW)/sum(UKLCTD_UKPN_union[['2050']]$Demand_nondom_sum_kWh)
 
 # # EVs per household
 
-# NG_EVs_per_household_2020 <- sum(UKPVD_FES_df[['2020']]$EV_number)/sum(UKPVD_FES_df[['2020']]$Meters_domestic)
-# NG_EVs_per_household_2050 <- sum(UKPVD_FES_df[['2050']]$EV_number)/sum(UKPVD_FES_df[['2050']]$Meters_domestic)
+# NG_EVs_per_household_2020 <- sum(UKLCTD_FES_df[['2020']]$EV_number)/sum(UKLCTD_FES_df[['2020']]$Meters_domestic)
+# NG_EVs_per_household_2050 <- sum(UKLCTD_FES_df[['2050']]$EV_number)/sum(UKLCTD_FES_df[['2050']]$Meters_domestic)
 
-# UKPN_EVs_per_household_2020 <- sum(UKPVD_UKPN_union[['2020']]$UKPN_BEVs_number)/sum(UKPVD_UKPN_union[['2020']]$Meters_domestic)
-# UKPN_EVs_per_household_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_BEVs_number)/sum(UKPVD_UKPN_union[['2050']]$Meters_domestic)
+# UKPN_EVs_per_household_2020 <- sum(UKLCTD_UKPN_union[['2020']]$UKPN_BEVs_number)/sum(UKLCTD_UKPN_union[['2020']]$Meters_domestic)
+# UKPN_EVs_per_household_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_BEVs_number)/sum(UKLCTD_UKPN_union[['2050']]$Meters_domestic)
 
-# NPG_EVs_per_household_2020 <- sum(UKPVD_NPG_union[['2020']]$NPG_EVs_number)/sum(UKPVD_NPG_union[['2020']]$Meters_domestic)
-# NPG_EVs_per_household_2050 <- sum(UKPVD_NPG_union[['2050']]$NPG_EVs_number)/sum(UKPVD_NPG_union[['2050']]$Meters_domestic)
+# NPG_EVs_per_household_2020 <- sum(UKLCTD_NPG_union[['2020']]$NPG_EVs_number)/sum(UKLCTD_NPG_union[['2020']]$Meters_domestic)
+# NPG_EVs_per_household_2050 <- sum(UKLCTD_NPG_union[['2050']]$NPG_EVs_number)/sum(UKLCTD_NPG_union[['2050']]$Meters_domestic)
 
 # # Growth Factors for EVs
 
-# NG_EV_Growth_Factor_2020_2050_NoSmart <- sum(UKPVD_FES_df[['2050']]$EV_peak_NoSmart_kW)/sum(UKPVD_FES_df[['2020']]$EV_peak_NoSmart_kW)
-# NG_EV_Growth_Factor_2020_2050_Smart <- sum(UKPVD_FES_df[['2050']]$EV_peak_Smart_kW)/sum(UKPVD_FES_df[['2020']]$EV_peak_Smart_kW)
+# NG_EV_Growth_Factor_2020_2050_NoSmart <- sum(UKLCTD_FES_df[['2050']]$EV_peak_NoSmart_kW)/sum(UKLCTD_FES_df[['2020']]$EV_peak_NoSmart_kW)
+# NG_EV_Growth_Factor_2020_2050_Smart <- sum(UKLCTD_FES_df[['2050']]$EV_peak_Smart_kW)/sum(UKLCTD_FES_df[['2020']]$EV_peak_Smart_kW)
 
-# UKPN_EV_Growth_Factor_2020_2050 <- sum(UKPVD_UKPN_DFES_df[['2050']]$BEVs_number)/sum(UKPVD_UKPN_DFES_df[['2020']]$BEVs_number)
-# NPG_EV_Growth_Factor_2020_2050 <- sum(UKPVD_NPG_DFES_df[['2050']]$EVs_number)/sum(UKPVD_NPG_DFES_df[['2020']]$EVs_number)
+# UKPN_EV_Growth_Factor_2020_2050 <- sum(UKLCTD_UKPN_DFES_df[['2050']]$BEVs_number)/sum(UKLCTD_UKPN_DFES_df[['2020']]$BEVs_number)
+# NPG_EV_Growth_Factor_2020_2050 <- sum(UKLCTD_NPG_DFES_df[['2050']]$EVs_number)/sum(UKLCTD_NPG_DFES_df[['2020']]$EVs_number)
 
 # # HPs per household
 
-# NG_HPs_per_household <- sum(UKPVD_FES_df[['2050']]$Heatpumps_nonhybrid_installations)/sum(UKPVD_FES_df[['2050']]$Meters_domestic)
-# NG_HybridHPs_per_household <- sum(UKPVD_FES_df[['2050']]$Heatpumps_hybrid_installations)/sum(UKPVD_FES_df[['2050']]$Meters_domestic)
+# NG_HPs_per_household <- sum(UKLCTD_FES_df[['2050']]$Heatpumps_nonhybrid_installations)/sum(UKLCTD_FES_df[['2050']]$Meters_domestic)
+# NG_HybridHPs_per_household <- sum(UKLCTD_FES_df[['2050']]$Heatpumps_hybrid_installations)/sum(UKLCTD_FES_df[['2050']]$Meters_domestic)
 
-# UKPN_HPs_per_household <- sum(UKPVD_UKPN_union[['2050']]$UKPN_Pure_HPs_number)/sum(UKPVD_UKPN_union[['2050']]$Meters_domestic)
-# NPG_HPs_per_household <- sum(UKPVD_NPG_union[['2050']]$NPG_Heatpumps_LSOA_number)/sum(UKPVD_NPG_union[['2050']]$Meters_domestic)
+# UKPN_HPs_per_household <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_Pure_HPs_number)/sum(UKLCTD_UKPN_union[['2050']]$Meters_domestic)
+# NPG_HPs_per_household <- sum(UKLCTD_NPG_union[['2050']]$NPG_Heatpumps_LSOA_number)/sum(UKLCTD_NPG_union[['2050']]$Meters_domestic)
 
 # UKPN_proportion_NG_HPs_per_household_2050 <- UKPN_HPs_per_household/NG_HPs_per_household
 # NPG_proportion_NG_HPs_per_household_2050 <- NPG_HPs_per_household/NG_HPs_per_household
 
-# UKPN_proportion_NG_HPs_Total_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_Pure_HPs_number)/sum(UKPVD_FES_df[['2050']]$Heatpumps_nonhybrid_installations)
-# NPG_proportion_NG_HPs_Total_2050 <- sum(UKPVD_NPG_union[['2050']]$NPG_Heatpumps_LSOA_number)/sum(UKPVD_FES_df[['2050']]$Heatpumps_nonhybrid_installations)
+# UKPN_proportion_NG_HPs_Total_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_Pure_HPs_number)/sum(UKLCTD_FES_df[['2050']]$Heatpumps_nonhybrid_installations)
+# NPG_proportion_NG_HPs_Total_2050 <- sum(UKLCTD_NPG_union[['2050']]$NPG_Heatpumps_LSOA_number)/sum(UKLCTD_FES_df[['2050']]$Heatpumps_nonhybrid_installations)
 
 # # Storage - comparison between NG and DFES:
 
 
-# NG_Stor_per_household_2050 <- sum(UKPVD_FES_df[['2050']]$Stor_kW)/sum(UKPVD_FES_df[['2050']]$Meters_domestic)
+# NG_Stor_per_household_2050 <- sum(UKLCTD_FES_df[['2050']]$Stor_kW)/sum(UKLCTD_FES_df[['2050']]$Meters_domestic)
 
-# UKPN_Stor_per_household_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_Stor_Dom_kW_df + UKPVD_UKPN_union[['2050']]$UKPN_Stor_Nonom_kW_df)/sum(UKPVD_UKPN_union[['2050']]$Meters_domestic)
-# NPG_Stor_per_household_2050 <- sum(UKPVD_NPG_union[['2050']]$NPG_Storage_sum_kW)/sum(UKPVD_NPG_union[['2050']]$Meters_domestic)
+# UKPN_Stor_per_household_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_Stor_Dom_kW_df + UKLCTD_UKPN_union[['2050']]$UKPN_Stor_Nonom_kW_df)/sum(UKLCTD_UKPN_union[['2050']]$Meters_domestic)
+# NPG_Stor_per_household_2050 <- sum(UKLCTD_NPG_union[['2050']]$NPG_Storage_sum_kW)/sum(UKLCTD_NPG_union[['2050']]$Meters_domestic)
 
-# UKPN_over_NG_Stor_2050 <- sum(UKPVD_UKPN_union[['2050']]$UKPN_Stor_Dom_kW_df + UKPVD_UKPN_union[['2050']]$UKPN_Stor_Nonom_kW_df)/sum(UKPVD_UKPN_union[['2050']]$Stor_kW)
-# NPG_over_NG_Stor_2050 <- sum(UKPVD_NPG_union[['2050']]$NPG_Storage_sum_kW)/sum(UKPVD_NPG_union[['2050']]$Stor_kW)
+# UKPN_over_NG_Stor_2050 <- sum(UKLCTD_UKPN_union[['2050']]$UKPN_Stor_Dom_kW_df + UKLCTD_UKPN_union[['2050']]$UKPN_Stor_Nonom_kW_df)/sum(UKLCTD_UKPN_union[['2050']]$Stor_kW)
+# NPG_over_NG_Stor_2050 <- sum(UKLCTD_NPG_union[['2050']]$NPG_Storage_sum_kW)/sum(UKLCTD_NPG_union[['2050']]$Stor_kW)
 
 
 # Calibrate NG EV demand to dFES number of vehicles -> get aggregate demand per vehicle -> get nukber of vehicles & aggregate demand for each LSOA
 
 # A sense check - if every car becomes an EV (same as current number of cars, ~40 million), what would NG demand be per vehicle?
 
-NG_EV_Demand_kWperVehicle_NoSmart <- sum(UKPVD_FES_df[['2050']]$EV_peak_NoSmart_kW) / sum(UKPVD_FES_df[['2050']]$EV_number)
-NG_EV_Demand_kWperVehicle_Smart <- sum(UKPVD_FES_df[['2050']]$EV_peak_Smart_kW) / sum(UKPVD_FES_df[['2050']]$EV_number)
+NG_EV_Demand_kWperVehicle_NoSmart <- sum(UKLCTD_FES_df[['2050']]$EV_peak_NoSmart_kW) / sum(UKLCTD_FES_df[['2050']]$EV_number)
+NG_EV_Demand_kWperVehicle_Smart <- sum(UKLCTD_FES_df[['2050']]$EV_peak_Smart_kW) / sum(UKLCTD_FES_df[['2050']]$EV_number)
 
 # # This number (and that below for NPG, which is similar) seem surprisingly low to me (approx 0.6/0.3kW per vehicle depending on smart/non smart charging), but scenarios are broadly similar and results similar to the above for NG - NG say no ICEs on the road by 2050, and UKPN/NPG scenarios have the same.
 
-# UKPN_Aggregate_EV_Demand_kWperVehicle_NoSmart <- sum(UKPVD_UKPN_union[['2050']]$EV_peak_NoSmart_kW)/sum(UKPVD_UKPN_union[['2050']]$UKPN_BEVs_number)
-# UKPN_Aggregate_EV_Demand_kWperVehicle_Smart <- sum(UKPVD_UKPN_union[['2050']]$EV_peak_Smart_kW)/sum(UKPVD_UKPN_union[['2050']]$UKPN_BEVs_number)
+# UKPN_Aggregate_EV_Demand_kWperVehicle_NoSmart <- sum(UKLCTD_UKPN_union[['2050']]$EV_peak_NoSmart_kW)/sum(UKLCTD_UKPN_union[['2050']]$UKPN_BEVs_number)
+# UKPN_Aggregate_EV_Demand_kWperVehicle_Smart <- sum(UKLCTD_UKPN_union[['2050']]$EV_peak_Smart_kW)/sum(UKLCTD_UKPN_union[['2050']]$UKPN_BEVs_number)
 
-# NPG_Aggregate_EV_Demand_kWperVehicle_NoSmart <- sum(UKPVD_NPG_union[['2050']]$EV_peak_NoSmart_kW)/sum(UKPVD_NPG_union[['2050']]$NPG_EVs_number)
-# NPG_Aggregate_EV_Demand_kWperVehicle_Smart <- sum(UKPVD_NPG_union[['2050']]$EV_peak_Smart_kW)/sum(UKPVD_NPG_union[['2050']]$NPG_EVs_number)
+# NPG_Aggregate_EV_Demand_kWperVehicle_NoSmart <- sum(UKLCTD_NPG_union[['2050']]$EV_peak_NoSmart_kW)/sum(UKLCTD_NPG_union[['2050']]$NPG_EVs_number)
+# NPG_Aggregate_EV_Demand_kWperVehicle_Smart <- sum(UKLCTD_NPG_union[['2050']]$EV_peak_Smart_kW)/sum(UKLCTD_NPG_union[['2050']]$NPG_EVs_number)
 
 
 
@@ -552,16 +552,16 @@ NG_EV_Demand_kWperVehicle_Smart <- sum(UKPVD_FES_df[['2050']]$EV_peak_Smart_kW) 
 
 # Combine scenarios by year in lapply loop
 
-UKPVD_base_scenarios_df_list <- lapply(years_of_interest_list,function(year){
+UKLCTD_base_scenarios_df_list <- lapply(years_of_interest_list,function(year){
 	# Add UKPN data
-	UKPVD_UKPN_DFES_year_relabelled_df<-UKPVD_UKPN_DFES_df[[year]]
-	colnames(UKPVD_UKPN_DFES_year_relabelled_df) <- c('LSOA',paste("UKPN", colnames(UKPVD_UKPN_DFES_year_relabelled_df)[-1], sep = "_"))
-	df <- merge(UKPVD_FES_df[[year]],UKPVD_UKPN_DFES_year_relabelled_df,by='LSOA',all=TRUE)
+	UKLCTD_UKPN_DFES_year_relabelled_df<-UKLCTD_UKPN_DFES_df[[year]]
+	colnames(UKLCTD_UKPN_DFES_year_relabelled_df) <- c('LSOA',paste("UKPN", colnames(UKLCTD_UKPN_DFES_year_relabelled_df)[-1], sep = "_"))
+	df <- merge(UKLCTD_FES_df[[year]],UKLCTD_UKPN_DFES_year_relabelled_df,by='LSOA',all=TRUE)
 
 	# Add WPD_NPG data
-	UKPVD_WPD_NPG_DFES_year_relabelled_df<-UKPVD_WPD_NPG_DFES_df[[year]]
-	colnames(UKPVD_WPD_NPG_DFES_year_relabelled_df) <- c('LSOA',paste("WPD_NPG", colnames(UKPVD_WPD_NPG_DFES_year_relabelled_df)[-1], sep = "_"))
-	df <- merge(df,UKPVD_WPD_NPG_DFES_year_relabelled_df,by='LSOA',all=TRUE)
+	UKLCTD_WPD_NPG_DFES_year_relabelled_df<-UKLCTD_WPD_NPG_DFES_df[[year]]
+	colnames(UKLCTD_WPD_NPG_DFES_year_relabelled_df) <- c('LSOA',paste("WPD_NPG", colnames(UKLCTD_WPD_NPG_DFES_year_relabelled_df)[-1], sep = "_"))
+	df <- merge(df,UKLCTD_WPD_NPG_DFES_year_relabelled_df,by='LSOA',all=TRUE)
 
 	# Replace generic data with UKPN, WPD_NPG, and WPD data for regions where this is available
 
@@ -601,7 +601,7 @@ UKPVD_base_scenarios_df_list <- lapply(years_of_interest_list,function(year){
 	return(df)
 })
 
-names(UKPVD_base_scenarios_df_list) <- years_of_interest_list
+names(UKLCTD_base_scenarios_df_list) <- years_of_interest_list
 
 
 # 7. Plot distributions for whole GB and for smaller regions
@@ -609,10 +609,10 @@ names(UKPVD_base_scenarios_df_list) <- years_of_interest_list
 
 
 lapply(c('2020','2050'),function(year){
-	dfs_by_region <- list(UKPVD_FES_df[[year]],
-						  UKPVD_base_scenarios_df_list[[year]],
-						  subset(UKPVD_base_scenarios_df_list[[year]], LSOA %in% UKPVD_WPD_NPG_DFES_df[[year]]$LSOA),
-						  subset(UKPVD_base_scenarios_df_list[[year]], LSOA %in% UKPVD_UKPN_DFES_df[[year]]$LSOA))
+	dfs_by_region <- list(UKLCTD_FES_df[[year]],
+						  UKLCTD_base_scenarios_df_list[[year]],
+						  subset(UKLCTD_base_scenarios_df_list[[year]], LSOA %in% UKLCTD_WPD_NPG_DFES_df[[year]]$LSOA),
+						  subset(UKLCTD_base_scenarios_df_list[[year]], LSOA %in% UKLCTD_UKPN_DFES_df[[year]]$LSOA))
 
 	names(dfs_by_region)<-c('allGB_FES', 'allGB_DFES', 'WPD_NPG', 'UKPN')
 

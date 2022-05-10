@@ -1,11 +1,11 @@
-# UKPVD
+# UKLCTD
 
 ### Overview ###
 
 
 This repository contains:
 
-(1) The United Kingdom Photovoltaics Database (UKPVD), a collection of real geographically disaggregated data on current PV deployment, network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
+(1) The United Kingdom Photovoltaics Database (UKLCTD), a collection of real geographically disaggregated data on current PV deployment, network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
 
 (2) Scenarios for future deployment of photovoltaics (PV), heat pumps (HPs), electric vehicles (EVs), and battery storage upto 2050 at an LSOA level based upon current data, National Grid's Future Energy Scenarios (FES) and UKPN, NPG, and WPD's Distribution Future Energy Scenarios (DFES).
 
@@ -15,11 +15,11 @@ This repository contains:
 ### Usage ###
 
 
-To generate the UKPVD and scenarios based upon this, scripts are intended to be run in this order (names mostly self explanatory)
+To generate the UKLCTD and scenarios based upon this, scripts are intended to be run in this order (names mostly self explanatory)
 
-- Generate_UKPVD.R
-- Add_substations_to_UKPVD.R
-- Add_Scottish_rurality_to_UKPVD.R
+- Generate_UKLCTD.R
+- Add_substations_to_UKLCTD.R
+- Add_Scottish_rurality_to_UKLCTD.R
 - Generate_NG_scenarios.R
 - Add_DFES_scenarios_w_plot.R
 - Cap_Deployment.R
@@ -30,7 +30,7 @@ Each of these scripts generates data used by subsequent scripts. These are broke
 
 The data may be explored after importing using the following script:
 
-- Generate_UKPVD.R
+- Generate_UKLCTD.R
 
 Additional scripts produce violin plots and distribution plots based upon this data.
 
@@ -40,7 +40,7 @@ Data: All raw data is in "Input_Data". This data can be updated as new informati
 
 Plots are generated in the "Plots" folder
 
-"Complementary_Analysis" contains scripts which support, but are not central to this analysis. This includes an initial attempt to attribute LSOAs to grid supply points, an analysis of Elexon data to indicate differences in temporal distribution of electricity usage (aggregated) across user types, an attribution of ruralities to Scottish LSOAs based on population density (replaced by attribution of rurality type performed by Scottish government in the final analysis) and an "Analysis" script which condusts some basic analysis of rurality in UKPVD.
+"Complementary_Analysis" contains scripts which support, but are not central to this analysis. This includes an initial attempt to attribute LSOAs to grid supply points, an analysis of Elexon data to indicate differences in temporal distribution of electricity usage (aggregated) across user types, an attribution of ruralities to Scottish LSOAs based on population density (replaced by attribution of rurality type performed by Scottish government in the final analysis) and an "Analysis" script which condusts some basic analysis of rurality in UKLCTD.
 
 
 ### Convention ###

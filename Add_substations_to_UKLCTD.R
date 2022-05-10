@@ -12,21 +12,21 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKPVD/'
+root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
-intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKPVD is kept
+intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKLCTD is kept
 output_path <- paste(root_path,'Output_data/',sep='')
 
 ### INPUT DATA
 
-# UKPVD containing recent LSOA-level data on spatial area, population, rurality, meter data, and PV deployment. Generated from raw data sources using 'Generate_UKPVD.R'
-UKPVD_input <- 'UKPVD_Oct2020.csv'
+# UKLCTD containing recent LSOA-level data on spatial area, population, rurality, meter data, and PV deployment. Generated from raw data sources using 'Generate_UKLCTD.R'
+UKLCTD_input <- 'UKLCTD_Oct2020.csv'
 
 # WPD data on number and type of substations per LSOA. This is an outome derived from WPD GIS data by Paul Westacott as part of previous project - PV2025 – Potential Costs and Benefits of Photovoltaic for UK Infrastructure and Society’ funded by the RCUK's Energy Programme (Contract no: EP/ K02227X/1).
 WPD_substations_input <- "WPD/WPD_Substations.csv" 
 
 ### OUTPUT DATA
-UKPVD_w_substations_output <- 'UKPVD_w_substations_Oct2020.csv'
+UKLCTD_w_substations_output <- 'UKLCTD_w_substations_Oct2020.csv'
 
 
 # Places for plots:
@@ -35,11 +35,11 @@ Meter_Density_GMT_Substation_Proportion_Plot_path <- 'Plots/Substations/Meter_De
 
 ### DO STUFF
 
-### 1. IMPORT UKPVD & WPD data
+### 1. IMPORT UKLCTD & WPD data
 #############################################################################################################
 
 # Import data
-UKPVD_df<-read.csv(paste(intermediate_path,UKPVD_input, sep=''), header=TRUE)
+UKLCTD_df<-read.csv(paste(intermediate_path,UKLCTD_input, sep=''), header=TRUE)
 
 WPD_substations_df<-read.csv(paste(input_path,WPD_substations_input, sep=''), header=TRUE)
 
@@ -48,10 +48,10 @@ WPD_substations_df<-read.csv(paste(input_path,WPD_substations_input, sep=''), he
 #############################################################################################################
 
 # Calculate meter density (comes in handy later)
-UKPVD_df$Meter_Density  <-  (UKPVD_df$Meters_domestic + UKPVD_df$Meters_nondom)/UKPVD_df$Area_km2
+UKLCTD_df$Meter_Density  <-  (UKLCTD_df$Meters_domestic + UKLCTD_df$Meters_nondom)/UKLCTD_df$Area_km2
 
 # Generate combined df containing relevant variables
-SW_LSOA_df <- merge(UKPVD_df,WPD_substations_df,by="LSOA")
+SW_LSOA_df <- merge(UKLCTD_df,WPD_substations_df,by="LSOA")
 
 # Derive additional variables
 SW_LSOA_df$N_Substations <- SW_LSOA_df$NSubstations_11kV_PMT + SW_LSOA_df$NSubstations_11kV_GMT
@@ -124,26 +124,26 @@ get_proportion_GMT_subs<-function(Meter_Density)
 
 # Generate estimated values per LSOA
 
-UKPVD_df$N_Substations <- (UKPVD_df$Meters_domestic + UKPVD_df$Meters_nondom)/sapply(UKPVD_df$Meter_Density,get_meters_per_subs)
-UKPVD_df$GMT_Substation_Proportion <- sapply(UKPVD_df$Meter_Density,get_proportion_GMT_subs)
+UKLCTD_df$N_Substations <- (UKLCTD_df$Meters_domestic + UKLCTD_df$Meters_nondom)/sapply(UKLCTD_df$Meter_Density,get_meters_per_subs)
+UKLCTD_df$GMT_Substation_Proportion <- sapply(UKLCTD_df$Meter_Density,get_proportion_GMT_subs)
 
 # Add WPD data
 SW_LSOA_merger_df<-SW_LSOA_df
 colnames(SW_LSOA_merger_df) <- c('LSOA',paste("WPD", colnames(SW_LSOA_df)[-1], sep = "_"))
-UKPVD_w_WPD_df <- merge(UKPVD_df,SW_LSOA_merger_df,by='LSOA',all=TRUE)
+UKLCTD_w_WPD_df <- merge(UKLCTD_df,SW_LSOA_merger_df,by='LSOA',all=TRUE)
 
 # Replace generated substation values w. actual WPD data for region where this data is available 
-WPD_indices <- which(! is.na(UKPVD_w_WPD_df$WPD_N_Substations), arr.ind=TRUE)
-UKPVD_w_WPD_df[WPD_indices,][['N_Substations']]<-UKPVD_w_WPD_df[WPD_indices,][['WPD_N_Substations']]
-UKPVD_w_WPD_df[WPD_indices,][['GMT_Substation_Proportion']]<-UKPVD_w_WPD_df[WPD_indices,][['WPD_GMT_Substation_Proportion']]
+WPD_indices <- which(! is.na(UKLCTD_w_WPD_df$WPD_N_Substations), arr.ind=TRUE)
+UKLCTD_w_WPD_df[WPD_indices,][['N_Substations']]<-UKLCTD_w_WPD_df[WPD_indices,][['WPD_N_Substations']]
+UKLCTD_w_WPD_df[WPD_indices,][['GMT_Substation_Proportion']]<-UKLCTD_w_WPD_df[WPD_indices,][['WPD_GMT_Substation_Proportion']]
 
 # Feed back into main df
-UKPVD_df$N_Substations <- UKPVD_w_WPD_df$N_Substations
-UKPVD_df$GMT_Substation_Proportion <- UKPVD_w_WPD_df$GMT_Substation_Proportion
-UKPVD_df<-subset(UKPVD_df, select = -c(Meter_Density))
+UKLCTD_df$N_Substations <- UKLCTD_w_WPD_df$N_Substations
+UKLCTD_df$GMT_Substation_Proportion <- UKLCTD_w_WPD_df$GMT_Substation_Proportion
+UKLCTD_df<-subset(UKLCTD_df, select = -c(Meter_Density))
 
 ### 4. EXPORT
 ####################################################################################################################
 
-write.table(UKPVD_df, paste(intermediate_path,UKPVD_w_substations_output, sep=''), sep=",", row.names=FALSE)
+write.table(UKLCTD_df, paste(intermediate_path,UKLCTD_w_substations_output, sep=''), sep=",", row.names=FALSE)
 

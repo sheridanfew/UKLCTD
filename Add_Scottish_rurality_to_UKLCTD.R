@@ -10,53 +10,53 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKPVD/'
+root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
-intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKPVD is kept
+intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKLCTD is kept
 output_path <- paste(root_path,'Output_data/',sep='') # NB. These are the same here - output here is intermediate
 
 ### INPUT DATA
 # ONS Table to convert between LA and LSOA, source: https://geoportal.statistics.gov.uk/datasets/output-area-to-lsoa-to-msoa-to-local-authority-district-december-2017-lookup-with-area-classifications-in-great-britain/data date accessed: 8 Oct 2020
 ONS_OA_LSOA_MSOA_LA_conversion_input <- "ONS/Output_Area_to_LSOA_to_MSOA_to_Local_Authority_District__December_2017__Lookup_with_Area_Classifications_in_Great_Britain.csv" 
 
-# UKPVD containing recent LSOA-level data on spatial area, population, rurality, meter data, PV deployment, and substation density. Generated from raw data sources using 'Generate_UKPVD.R', and substation data added using 'Add_substations_to_UKPVD.R'
-UKPVD_input <- 'UKPVD_w_substations_Oct2020.csv'
+# UKLCTD containing recent LSOA-level data on spatial area, population, rurality, meter data, PV deployment, and substation density. Generated from raw data sources using 'Generate_UKLCTD.R', and substation data added using 'Add_substations_to_UKLCTD.R'
+UKLCTD_input <- 'UKLCTD_w_substations_Oct2020.csv'
 
 
 ### DO STUFF
 
-### 1. IMPORT UKPVD
+### 1. IMPORT UKLCTD
 #############################################################################################################
 
-UKPVD_df<-read.csv(paste(intermediate_path,UKPVD_input, sep=''), header=TRUE)
+UKLCTD_df<-read.csv(paste(intermediate_path,UKLCTD_input, sep=''), header=TRUE)
 
 
 ### 2. GET STATS FOR METER DENSITY PER RURALITY CONTEXT
 #############################################################################################################
 
-UKPVD_df$Meter_density_dom<-UKPVD_df$Meters_domestic/UKPVD_df$Area_km2
+UKLCTD_df$Meter_density_dom<-UKLCTD_df$Meters_domestic/UKLCTD_df$Area_km2
 
-#Rurality_Meter_Density_df <-UKPVD_df[Rurality_code,Meter_density_dom]
-Rurality_Meter_Density_df <- subset(UKPVD_df,select=c('Rurality_code','Meter_density_dom'))
+#Rurality_Meter_Density_df <-UKLCTD_df[Rurality_code,Meter_density_dom]
+Rurality_Meter_Density_df <- subset(UKLCTD_df,select=c('Rurality_code','Meter_density_dom'))
 
 # Get rurality codes (but only those ending in 1)
-Rurality_types<-as.character(unique(UKPVD_df$Rurality_code)[1:5])
+Rurality_types<-as.character(unique(UKLCTD_df$Rurality_code)[1:5])
 
 Rurality_types<-Rurality_types[order(Rurality_types)]
 
 median_densities_by_rurality<-sapply(Rurality_types,function(rurality)
 {
-	median(UKPVD_df[which(UKPVD_df$Rurality_code==rurality),]$Meter_density_dom)
+	median(UKLCTD_df[which(UKLCTD_df$Rurality_code==rurality),]$Meter_density_dom)
 })
 
 mean_densities_by_rurality<-sapply(Rurality_types,function(rurality)
 {
-	mean(UKPVD_df[which(UKPVD_df$Rurality_code==rurality),]$Meter_density_dom)
+	mean(UKLCTD_df[which(UKLCTD_df$Rurality_code==rurality),]$Meter_density_dom)
 })
 
 sd_densities_by_rurality<-sapply(Rurality_types,function(rurality)
 {
-	sd(UKPVD_df[which(UKPVD_df$Rurality_code==rurality),]$Meter_density_dom)
+	sd(UKLCTD_df[which(UKLCTD_df$Rurality_code==rurality),]$Meter_density_dom)
 })
 
 density_stats_by_rurality<-rbind(median=median_densities_by_rurality,mean=mean_densities_by_rurality,sd=sd_densities_by_rurality)
@@ -82,44 +82,44 @@ names(max_min_array)<-c('A1','B1','B1','C1','C1','D1','D1','E1')
 
 # Compare Scottish LSOAs and assign rurality code
 
-UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_code<-sapply(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Meter_density_dom,function(dom_meter_density){
+UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_code<-sapply(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Meter_density_dom,function(dom_meter_density){
 	names(max_min_array)[(which.min((max_min_array-dom_meter_density)^2))]
 })
 
 # Add rurality description
 
-rurality_description_by_code<-unique(UKPVD_df$Rurality_description)
-names(rurality_description_by_code)<-unique(UKPVD_df$Rurality_code)
+rurality_description_by_code<-unique(UKLCTD_df$Rurality_description)
+names(rurality_description_by_code)<-unique(UKLCTD_df$Rurality_code)
 
-UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_description<-sapply(
-UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_code,function(rurality_code){
+UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_description<-sapply(
+UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_code,function(rurality_code){
 	return(as.character(rurality_description_by_code[as.character(rurality_code)]))
 })
 
 
 # (Currently not implemented) Replace A1, B1 with C1 for Scottish LSOAs - A1, B1, C1 more based on wider surroundings than properties of the LSOA itself
 
-# UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA) & grepl("[A-B]1" , UKPVD_df$Rurality_code)),]$Rurality_code<-'C1'
+# UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA) & grepl("[A-B]1" , UKLCTD_df$Rurality_code)),]$Rurality_code<-'C1'
 
 # Export dataframe:
 
-write.csv(UKPVD_df, paste(intermediate_path,'UKPVD_w_substations_w_Scot_Rurality_Oct2020.csv', sep=''), row.names=FALSE)
+write.csv(UKLCTD_df, paste(intermediate_path,'UKLCTD_w_substations_w_Scot_Rurality_Oct2020.csv', sep=''), row.names=FALSE)
 
 
 # 4  Look at some stats comparing distribution of ruralities in Scottish LSOAs to the UK as a whole -> similar proportion in cities, more in villages, fewer in towns 
 #############################################################################################################
 
 
-table(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_code)
+table(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_code)
 
-table(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_code)/table(UKPVD_df$Rurality_code)*nrow(UKPVD_df)/nrow(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),])
+table(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_code)/table(UKLCTD_df$Rurality_code)*nrow(UKLCTD_df)/nrow(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),])
 
 
-UKPVD_df$Rurality_class<-NA
-UKPVD_df[which(grepl("[A-C][1-2]" , UKPVD_df$Rurality_code)),]$Rurality_class<-"City"
-UKPVD_df[which(grepl("D[1-2]" , UKPVD_df$Rurality_code)),]$Rurality_class<-"Town"
-UKPVD_df[which(grepl("E[1-2]" , UKPVD_df$Rurality_code)),]$Rurality_class<-"Village"
+UKLCTD_df$Rurality_class<-NA
+UKLCTD_df[which(grepl("[A-C][1-2]" , UKLCTD_df$Rurality_code)),]$Rurality_class<-"City"
+UKLCTD_df[which(grepl("D[1-2]" , UKLCTD_df$Rurality_code)),]$Rurality_class<-"Town"
+UKLCTD_df[which(grepl("E[1-2]" , UKLCTD_df$Rurality_code)),]$Rurality_class<-"Village"
 
-table(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_class)/table(UKPVD_df$Rurality_class)*nrow(UKPVD_df)/nrow(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),])
+table(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_class)/table(UKLCTD_df$Rurality_class)*nrow(UKLCTD_df)/nrow(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),])
 
-table(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_class)/table(UKPVD_df[which(grepl("[E,W][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),]$Rurality_class)*nrow(UKPVD_df[which(grepl("[E,W][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),])/nrow(UKPVD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKPVD_df$LSOA)),])
+table(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_class)/table(UKLCTD_df[which(grepl("[E,W][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),]$Rurality_class)*nrow(UKLCTD_df[which(grepl("[E,W][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),])/nrow(UKLCTD_df[which(grepl("S[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" , UKLCTD_df$LSOA)),])

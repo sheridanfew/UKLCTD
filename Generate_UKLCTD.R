@@ -1,4 +1,4 @@
-# Script to generate UKPVD database directly from data sources
+# Script to generate UKLCTD database directly from data sources
 # Sheridan Few, Oct 2020
 # See also readme file
 
@@ -12,9 +12,9 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKPVD/'
+root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
-output_path <- paste(root_path,'Intermediate_data/',sep='') # UKPVD is considered intermediate data as it is an output of sorts, but will be used for future processing
+output_path <- paste(root_path,'Intermediate_data/',sep='') # UKLCTD is considered intermediate data as it is an output of sorts, but will be used for future processing
 
 ### INPUT DATA
 # Note that while LSOA data for all aspects is available for England and Wales, only some is available for Scotland (elec demand & PV deployment), and Northern Ireland doesn't use LSOAs, so is excluded
@@ -42,9 +42,9 @@ Ofgem_FiT_data_3_input <- 'Ofgem/installation_report_oct2020_part_3.xlsx'
 
 ### OUTPUT DATA
 
-UKPVD_output <- 'UKPVD_Oct2020.csv'
+UKLCTD_output <- 'UKLCTD_Oct2020.csv'
 
-### DO STUFF (STEPS 1 - 7 TO GENERATE UKPVD FROM INPUT DATA)
+### DO STUFF (STEPS 1 - 7 TO GENERATE UKLCTD FROM INPUT DATA)
 
 ### 1. IMPORT ONS DATA WITH CORRESPONDENCE BETWEEN OAs, LSOAs, AND MSOAs (later used in processing BEIS data)
 #############################################################################################################
@@ -251,20 +251,20 @@ Ofgem_FiT_data_processed_df$PV_nondom_installations[is.na(Ofgem_FiT_data_process
 
 ### 6. COMBINE DATA INTO ONE DATABASE
 ##############################################################
-UKPVD_df <- Reduce(function(x, y){merge(x, y, by= "LSOA", all.x= TRUE, all.y= TRUE)}, 
+UKLCTD_df <- Reduce(function(x, y){merge(x, y, by= "LSOA", all.x= TRUE, all.y= TRUE)}, 
 	list(Combined_Pop_Area_LSOA_df, ONS_Rurality_LSOA_df, BEIS_Meter_data_processed_df, Ofgem_FiT_data_processed_df))
 
 # Where appropriate, replace NAs with zeroes in PV data (sum capacity and number of installations per LSOA leading to zero where none installed, but retain NA for median cap)
-UKPVD_df$PV_domestic_sum_kW[is.na(UKPVD_df$PV_domestic_sum_kW)] <- 0
-UKPVD_df$PV_domestic_installations[is.na(UKPVD_df$PV_domestic_installations)] <- 0
-UKPVD_df$PV_nondom_sum_kW[is.na(UKPVD_df$PV_nondom_sum_kW)] <- 0
-UKPVD_df$PV_nondom_installations[is.na(UKPVD_df$PV_nondom_installations)] <- 0
+UKLCTD_df$PV_domestic_sum_kW[is.na(UKLCTD_df$PV_domestic_sum_kW)] <- 0
+UKLCTD_df$PV_domestic_installations[is.na(UKLCTD_df$PV_domestic_installations)] <- 0
+UKLCTD_df$PV_nondom_sum_kW[is.na(UKLCTD_df$PV_nondom_sum_kW)] <- 0
+UKLCTD_df$PV_nondom_installations[is.na(UKLCTD_df$PV_nondom_installations)] <- 0
 
 # Remove LSOAs with missing values for number of meters (general cleanup of data)
-UKPVD_df <- UKPVD_df[rowSums(is.na(UKPVD_df[7:12])) == 0,]
+UKLCTD_df <- UKLCTD_df[rowSums(is.na(UKLCTD_df[7:12])) == 0,]
 
-### 7. EXPORT UKPVD
+### 7. EXPORT UKLCTD
 ##############################################################
 
-write.table(UKPVD_df, paste(output_path,UKPVD_output, sep=''), sep=",", row.names=FALSE)
+write.table(UKLCTD_df, paste(output_path,UKLCTD_output, sep=''), sep=",", row.names=FALSE)
 

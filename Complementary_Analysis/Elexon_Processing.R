@@ -12,9 +12,9 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKPVD/'
+root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
-output_path <- paste(root_path,'Intermediate_data/',sep='') # UKPVD is considered intermediate data as it is an output of sorts, but will be used for future processing
+output_path <- paste(root_path,'Intermediate_data/',sep='') # UKLCTD is considered intermediate data as it is an output of sorts, but will be used for future processing
 
 ### INPUT DATA
 
