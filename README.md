@@ -5,7 +5,7 @@
 
 This repository contains:
 
-(1) The United Kingdom Low Carnon Technologies Database (UKLCTD), a collection of real geographically disaggregated data on current deployment of small scale photovoltaics (PV), heat pumps (HPs), electric vehicles (EVs), network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
+(1) The United Kingdom Low Carbon Technologies Database (UKLCTD), a collection of real geographically disaggregated data on current deployment of small scale photovoltaics (PV), heat pumps (HPs), electric vehicles (EVs), network inrastructure, domestic and nondomestic meter density, electricity demand, and rurality at an LSOA level.
 
 (2) Scenarios for future deployment of PV, HPs, EVs, and battery storage upto 2050 at an LSOA level based upon current data, National Grid's Future Energy Scenarios (FES) and UKPN, NPG, and WPD's Distribution Future Energy Scenarios (DFES).
 
