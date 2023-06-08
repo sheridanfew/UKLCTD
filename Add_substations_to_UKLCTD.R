@@ -12,7 +12,7 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
+root_path <- '/Users/Shez/Library/CloudStorage/GoogleDrive-sheridan.few@gmail.com/My\ Drive/Grantham/JUICE/UKPVD/'
 input_path <- paste(root_path,'Input_data/',sep='')
 intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKLCTD is kept
 output_path <- paste(root_path,'Output_data/',sep='')
@@ -67,6 +67,7 @@ SW_LSOA_subset_df <- SW_LSOA_df[ which(! is.na(SW_LSOA_df$GMT_Substation_Proport
 Meter_Density_Meters_Per_Substation_fitline<-lowess(SW_LSOA_subset_df$Meter_Density, SW_LSOA_subset_df$Meters_Per_Substation)
 Meter_Density_GMT_Substation_Proportion_fitline<-lowess(SW_LSOA_subset_df$Meter_Density, SW_LSOA_subset_df$GMT_Substation_Proportion)
 
+
 # Plot relationships
 png(paste(root_path,Meter_Density_Meters_Per_Substation_Plot_path,sep=''))
 	plot(SW_LSOA_df$Meter_Density, SW_LSOA_df$Meters_Per_Substation,xlab = "Meter Density",ylab = "Meters per Substation")
@@ -118,6 +119,37 @@ get_proportion_GMT_subs<-function(Meter_Density)
 	}
 	return(GMT_Substation_Proportion)
 }
+
+# Calculate R^2 for meters per substation
+
+SW_LSOA_wo_extremes_df <- SW_LSOA_subset_df[SW_LSOA_subset_df$Meter_Density <quantile(SW_LSOA_df$Meter_Density,0.98)[[1]],]
+
+Mean_Meters_Per_Substation <- mean(SW_LSOA_wo_extremes_df$Meters_Per_Substation)
+
+Meters_Per_Subs_pred <- sapply(SW_LSOA_wo_extremes_df$Meter_Density,get_meters_per_subs)
+
+R_sq_meter_dens <- 1 - (
+				   		sum((SW_LSOA_wo_extremes_df$Meters_Per_Substation - Meters_Per_Subs_pred)^2) /
+				   		sum((SW_LSOA_wo_extremes_df$Meters_Per_Substation - Mean_Meters_Per_Substation)^2)
+				   		)
+
+R_sq_meter_dens
+
+# Calculate R^2 for GMT proportion
+
+SW_LSOA_wo_NAN_df <- SW_LSOA_subset_df[SW_LSOA_subset_df$GMT_Substation_Proportion != 'NAN',]
+
+Mean_GMT_Substation_Proportion <- mean(SW_LSOA_wo_NAN_df$GMT_Substation_Proportion)
+
+GMT_Substation_Proportion_pred <- sapply(SW_LSOA_wo_NAN_df$Meter_Density,get_proportion_GMT_subs)
+
+R_sq_GMT_Substation_Proportion <- 1 - (
+									  sum((SW_LSOA_wo_NAN_df$GMT_Substation_Proportion - GMT_Substation_Proportion_pred)^2) /
+				   					  sum((SW_LSOA_wo_NAN_df$GMT_Substation_Proportion - Mean_GMT_Substation_Proportion)^2)
+				   					  )
+
+R_sq_GMT_Substation_Proportion
+
 
 ### 3. ESTIMATE NUMBER OF SUBSTATIONS & GMT PROPORTION FOR EVERY LSOA IN GB, MERGE WITH ACTUAL VALUES FOR SW ENGLAND
 ####################################################################################################################
