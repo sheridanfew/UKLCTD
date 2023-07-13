@@ -15,7 +15,11 @@ This repository contains:
 ### Usage ###
 
 
-To generate the UKLCTD and scenarios based upon this, scripts are intended to be run in this order (names mostly self explanatory)
+The data may be explored using the following script:
+
+- Import_UKLCTD.R
+
+To generate the UKLCTD and scenarios from scratch, scripts are intended to be run in this order (names mostly self explanatory)
 
 - Generate_UKLCTD.R
 - Add_substations_to_UKLCTD.R
@@ -28,13 +32,9 @@ To generate the UKLCTD and scenarios based upon this, scripts are intended to be
 
 Each of these scripts generates data used by subsequent scripts. These are broken down into stages and commented as far as possible.
 
-The data may be explored after importing using the following script:
-
-- Import_UKLCTD.R
-
 Additional scripts produce violin plots and distribution plots based upon this data.
 
-### Directory Structure ###
+### Data Structure ###
 
 Data: All raw data is in "Input_Data". This data can be updated as new information becomes available (input data files, sheets, and cells referred to in the above scripts will likely need to be updated accordingly). Data produced by these scripts in "Intermediate Data" and "Output Data" folders depending on whether it is used by subsequent scripts.
 
@@ -45,7 +45,7 @@ Plots are generated in the "Plots" folder
 
 ### Convention ###
 
-These scripts were written with the following naming/processing convention in mind (not always consistently followed):
+These scripts were written with the following naming/processing convention in mind:
 
 Databases: Source_Datatype_Resolution_Format (Ofgem_FiT_PV_LSOA_df)
 

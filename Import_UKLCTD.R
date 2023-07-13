@@ -9,7 +9,7 @@ library(plyr)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Library/CloudStorage/GoogleDrive-sheridan.few@gmail.com/My\ Drive/Grantham/JUICE/UKPVD/'
+root_path <- '/Users/Shez/Library/CloudStorage/GoogleDrive-sheridan.few@gmail.com/My\ Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
 intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKLCTD is kept
 output_path <- paste(root_path,'Output_data/',sep='')

@@ -12,7 +12,7 @@ library(readxl)
 
 ### PATH DEFINITION
 
-root_path <- '/Users/Shez/Google Drive/Grantham/JUICE/UKLCTD/'
+root_path <- '/Users/Shez/Library/CloudStorage/GoogleDrive-sheridan.few@gmail.com/My\ Drive/Grantham/JUICE/UKLCTD/'
 input_path <- paste(root_path,'Input_data/',sep='')
 intermediate_path <- paste(root_path,'Intermediate_data/',sep='') # This is where UKLCTD is kept
 output_path <- paste(root_path,'Output_data/',sep='')
@@ -33,12 +33,23 @@ ONS_OA_LSOA_MSOA_conversion_input <- "ONS/Output_Area_to_LSOA_to_MSOA_to_Local_A
 County_Durham_LAs<-c('County Durham','Darlington','Hartlepool','Stockton-on-Tees')
 County_Durham_LAs<-c('County Durham')
 London_LAs<-c('City of London', 'Barking and Dagenham', 'Barnet', 'Bexley', 'Brent', 'Bromley', 'Camden', 'Croydon', 'Ealing', 'Enfield', 'Greenwich', 'Hackney', 'Hammersmith and Fulham', 'Haringey', 'Harrow', 'Havering', 'Hillingdon', 'Hounslow', 'Islington', 'Kensington and Chelsea', 'Kingston upon Thames', 'Lambeth', 'Lewisham', 'Merton', 'Newham', 'Redbridge', 'Richmond upon Thames', 'Southwark', 'Sutton', 'Tower Hamlets', 'Waltham Forest', 'Wandsworth', 'Westminster')
+W_Yorks_LAs<-c('Bradford','Calderdale','Kirklees','Leeds','Wakefield')
+Yorks_Humber_LAs<-c('Bradford','Calderdale','Kirklees','Leeds','Wakefield',
+'Barnsley','Doncaster','Rotherham','Sheffield',
+'East Riding of Yorkshire','Kingston upon Hull, City of',
+'Craven','Harrogate', 'Hambleton','Richmondshire','Ryedale','Scarborough','Selby','York',
+'North East Lincolnshire','North Lincolnshire')
+
+
 
 ### OUTPUT DATA
 
 # LSOAs in London & Durham
 County_Durham_output <- 'County_Durham_LSOAs.csv'
 London_output <- 'London_LSOAs.csv'
+W_Yorks_output <- 'W_Yorks_LSOAs.csv'
+Yorks_Humber_output <- 'Yorks_Humber_LSOAs.csv'
+
 
 # Thresholds for low/med/high/v. high in heatmaps
 Heatmap_thresholds_output <- 'Heatmap_thresholds.csv'
@@ -82,9 +93,17 @@ County_Durham_LSOAs<-LSOA_LA_lookup_df[which(LSOA_LA_lookup_df$LA %in% County_Du
 
 London_LSOAs<-LSOA_LA_lookup_df[which(LSOA_LA_lookup_df$LA %in% London_LAs),]
 
-write.table(County_Durham_LSOAs$LSOA, paste(output_path,County_Durham_output, sep=''), sep=",", row.names=FALSE)
+W_Yorks_LSOAs<-LSOA_LA_lookup_df[which(LSOA_LA_lookup_df$LA %in% W_Yorks_LAs),]
 
-write.table(London_LSOAs$LSOA, paste(output_path,London_output, sep=''), sep=",", row.names=FALSE)
+Yorks_Humber_LSOAs<-LSOA_LA_lookup_df[which(LSOA_LA_lookup_df$LA %in% Yorks_Humber_LAs),]
+
+#write.table(County_Durham_LSOAs$LSOA, paste(output_path,County_Durham_output, sep=''), sep=",", row.names=FALSE)
+
+#write.table(London_LSOAs$LSOA, paste(output_path,London_output, sep=''), sep=",", row.names=FALSE)
+
+write.table(W_Yorks_LSOAs$LSOA, paste(output_path,W_Yorks_output, sep=''), sep=",", row.names=FALSE)
+
+write.table(Yorks_Humber_LSOAs$LSOA, paste(output_path,Yorks_Humber_output, sep=''), sep=",", row.names=FALSE)
 
 
 ### 4. Subset UKLCTD data in C Durham & London to check range of ruralities
